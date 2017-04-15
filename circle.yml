@@ -1,0 +1,22 @@
+general:
+    artifacts:
+        - /home/ubuntu/TicTacToe/app/build/outputs/apk/
+
+machine:
+    environment:
+        ANDROID_HOME: /usr/local/android-sdk-linux
+
+dependencies:
+    pre:
+        - chmod +x gradlew
+    override:
+        - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-23.0.3,android-23,extra-google-m2repository,extra-google-google_play_services,extra-android-support
+        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+
+test:
+    override:
+        - (./gradlew assemble):
+            timeout: 360
+        # build a release .apk and save it to artifacts with
+        - ./gradlew assembleRelease
+        - cp -r TicTacToe/build/outputs $CIRCLE_ARTIFACTS
